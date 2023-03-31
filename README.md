@@ -5,8 +5,8 @@ This is a repository containings data generators for spell correcting models of 
 
 ## Base pipeline/data generator types
 *Insert here (type, tables, papers ,etc.)*
+**Vietnamese Letter**
 <pre>
-In Vietnamese letters there are:
 17 alone consonants: b c d đ g h k l m n p q r s t v x
 10 mix consonants: ch gh gi kh ng ngh nh th tr qu
 6 vowels: a e i o u y and each vowel has some diacritical marks
