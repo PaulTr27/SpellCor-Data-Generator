@@ -5,16 +5,18 @@ This is a repository containings data generators for spell correcting models of 
 
 ## Base pipeline/data generator types
 *Insert here (type, tables, papers ,etc.)*
-**In Vietnamese letters there are:**
-*17 alone consonants:* b c d đ g h k l m n p q r s t v x
-*10 mix consonants:* ch gh gi kh ng ngh nh th tr qu
-*6 vowels:* a e i o u y and each vowel has some diacritical marks
-*a:* a à á ả ã ạ ă ằ ắ ẳ ẵ ặ â ầ ấ ẩ ẫ ậ (15)
-*e:* e è é ẻ ẽ ẹ ê ề ế ể ễ ệ (10)
-*i:* i ì í ỉ ĩ ị (5)
-*o:* o ò ó ỏ õ ọ ơ ờ ớ ở ỡ ợ ô ồ ố ổ ỗ ộ (15) 
-*u:* u ù ú ủ ũ ụ ư ừ ứ ử ữ ự (10)
-*y:* y ỳ ý ỷ ỹ ỵ (5)
+<pre>
+In Vietnamese letters there are:
+17 alone consonants: b c d đ g h k l m n p q r s t v x
+10 mix consonants: ch gh gi kh ng ngh nh th tr qu
+6 vowels: a e i o u y and each vowel has some diacritical marks
+a: a à á ả ã ạ ă ằ ắ ẳ ẵ ặ â ầ ấ ẩ ẫ ậ (15)
+e: e è é ẻ ẽ ẹ ê ề ế ể ễ ệ (10)
+i: i ì í ỉ ĩ ị (5)
+o: o ò ó ỏ õ ọ ơ ờ ớ ở ỡ ợ ô ồ ố ổ ỗ ộ (15) 
+u: u ù ú ủ ũ ụ ư ừ ứ ử ữ ự (10)
+y: y ỳ ý ỷ ỹ ỵ (5)
+</pre>
 
 **Types of Error in Vietnamese**
 Number | Label  | Description | Example |
