@@ -2,9 +2,8 @@
 
 ## Overview
 This is a repository containings data generators for spell correcting models of LHP-CoTAI NLP study group.
-
+***This project require Python 3.10 and above.***
 ## Base pipeline/data generator types
-*Insert here (type, tables, papers ,etc.)*
 
 **Vietnamese Letter**
 <pre>
