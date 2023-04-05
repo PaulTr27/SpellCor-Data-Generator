@@ -38,9 +38,9 @@ class DataGenerator:
                 result.append(Error_Dict[types_error])
                 
         if sum(result):
-            return (sentence_1, result, types_error)
+            return (sentence_2.split(), result, types_error)
         
-        return (sentence_1, result, 'No Error')
+        return (sentence_2.split(), result, 'No Error')
     
     def No_Error(self, text):
         return text, self.return_indices(text, text,'No Error')
@@ -287,9 +287,26 @@ class DataGenerator:
             for idx, text in enumerate(data):
                 type_error = rng.choice(7, 1)
                 gen_data, gen_label = self.get_error(text, type_error)
-                self.generated_data.append(gen_data)
+                self.generated_data.append((gen_data,text))
                 self.generated_label.append(gen_label)
         return self.generated_data, self.generated_label
-
-if __name__ == "__main__":
-    print("Why are you here")
+      
+    def get_data(self):
+        tokens, error_col, type_err_col = [], [], []
+        input_data, target_data = [], [] 
+        
+        for data in self.generated_data:
+            input_data.append(data[0])
+            target_data.append(data[1])
+            
+        for token, errors, type_err in self.generated_label:
+            tokens.append(token)
+            error_col.append(errors)
+            type_err_col.append(type_err)
+        
+        return dict(input_text = input_data,
+                    target_text = target_data,
+                    tokens = tokens,
+                    tags = error_col,
+                    general_error_type = type_err_col
+                    )
