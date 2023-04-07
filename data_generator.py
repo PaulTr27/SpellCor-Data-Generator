@@ -247,7 +247,7 @@ class DataGenerator:
         first_letter_list, word_list = self.get_first_letters(sentence,types_error)
         for idx, letter in enumerate(first_letter_list):
             if letter != None:
-                if (np.random.binomial(1,0.3,1)):
+                if (np.random.binomial(1,0.7,1)):
                     word_list[idx] = word_list[idx].replace(letter,types_error[letter],1)
                     
         out_sentence = " ".join(word_list)
@@ -289,7 +289,7 @@ class DataGenerator:
                 gen_data, gen_label = self.get_error(text, type_error)
                 self.generated_data.append((gen_data,text))
                 self.generated_label.append(gen_label)
-        return self.generated_data, self.generated_label
+        return "Generated data!"
       
     def get_data(self):
         tokens, error_col, type_err_col = [], [], []
