@@ -1,7 +1,9 @@
 from tqdm import tqdm
 import random
 import numpy as np
+import re
 
+np.random.seed(42)
 class DataGenerator:
     def __init__(self,data = ()):
         if data == None:
@@ -277,15 +279,29 @@ class DataGenerator:
             case default:
                 return self.No_Error(text)
 
-        
-    def generate(self, data = None,iterations = 1):
+    
+    def remove_punctuation(self, input_string):
+        out_string = re.sub(r'[^\w\s]', '', input_string)
+        return out_string
+    
+    def generate(self, data = None,iterations = 1, prob = None):
+        if prob == None:
+            prob =  [0.07462686567164178,
+                     0.14925373134328357,
+                     0.14925373134328357,
+                     0.14925373134328357,
+                     0.14925373134328357,
+                     0.14925373134328357,
+                     0.1791044776119403]
         if data == None:
             data = self.data
-        
+        for idx, text in enumerate(data):
+            data[idx] = self.remove_punctuation(text)
+            
         rng = np.random.default_rng()
         for iteration in tqdm(range(iterations)):
             for idx, text in enumerate(data):
-                type_error = rng.choice(7, 1)
+                type_error = rng.choice(7, 1, p = prob)
                 gen_data, gen_label = self.get_error(text, type_error)
                 self.generated_data.append((gen_data,text))
                 self.generated_label.append(gen_label)
