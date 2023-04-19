@@ -12,6 +12,22 @@ class DataGenerator:
             self.data = list(data)
         self.generated_data = []
         self.generated_label = []
+        self.error_counts = {'No Error':0, 
+                             'Telex Typing Error':0,
+                             'VNI Typing Error':0,
+                             'Missing Diacritical Marks':0,
+                             'Excess Letter Error': 0,
+                             'Missing Letter Error':0,
+                             'Wrong Spelling Error':0
+                             }
+        self.label2id = {0 : 'No Error',
+                         1 : 'Telex Typing Error',
+                         2 : 'VNI Typing Error',
+                         3 : 'Missing Diacritical Marks',
+                         4 : 'Excess Letter Error',
+                         5 : 'Missing Letter Error',
+                         6 : 'Wrong Spelling Error'
+                        }
     def __len__(self):
         if len(self.generated_data):
             return len(self.generated_data)
@@ -20,32 +36,10 @@ class DataGenerator:
     def __getitem__(self, index):
         if len(self.generated_data):
             return self.generated_data[index]
-        raise Exception("Data has not been generated. Please call generate() to generate data")
-    
-    
-    def return_indices(self, sentence_1, sentence_2,types_error):
-        Error_Dict = {'No Error':0, 
-                   'Telex Typing Error':1,
-                   'VNI Typing Error':2,
-                   'Missing Diacritical Marks':3,
-                   'Excess Letter Error': 4,
-                   'Missing Letter Error':5,
-                   'Wrong Spelling Error': 6
-                  }
-        result = []
-        for word_1, word_2 in zip(sentence_1.split(),sentence_2.split()):
-            if word_1 == word_2:
-                result.append(0)
-            else:
-                result.append(Error_Dict[types_error])
-                
-        if sum(result):
-            return (sentence_2.split(), result, types_error)
+        raise Exception("Data has not been generated. Please call generate() to generate data") 
         
-        return (sentence_2.split(), result, 'No Error')
-    
     def No_Error(self, text):
-        return text, self.return_indices(text, text,'No Error')
+        return [text, 0]
 
     def Telex_Typing_Error(self, word):
         telex_dict = {'à': 'af', 'á': 'as', 'ả': 'ar', 'ã': 'ax', 'ạ': 'aj',
@@ -118,7 +112,7 @@ class DataGenerator:
         else:
             return [vni_word,2] 
     
-    def Mising_Diacritical_Marks(word):
+    def Mising_Diacritical_Marks(self, word):
         non_diacritical_mark_dict = {
             'à': 'a', 'á': 'a', 'ả': 'a', 'ã': 'a', 'ạ': 'a',
             'ă': 'a', 'ằ': 'a', 'ắ': 'a', 'ẳ': 'a', 'ẵ': 'a', 'ặ': 'a',
@@ -142,13 +136,13 @@ class DataGenerator:
                     new_char = new_char.title()    
                 non_diacritic_word += new_char
             else:
-                non_diacritic_sentence += char
+                non_diacritic_word += char
         if non_diacritic_word == word:
             return [word, 0]
         else:
             return [non_diacritic_word,3] 
     
-    def Excess_Letter_Error(word):
+    def Excess_Letter_Error(self,word):
         excess_letter_word = word
         vowels = ['a', 'e', 'i', 'o', 'u','y']
         consonants = ['b', 'c', 'd', 'g', 'h', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'x']
@@ -168,7 +162,8 @@ class DataGenerator:
             return [word, 0]
         else:
             return [excess_letter_word,4]
-    def Missing_Letter_Error(word):
+        
+    def Missing_Letter_Error(self, word):
         if len(word) == 1:
             return [word,0]
         else:
@@ -245,13 +240,13 @@ class DataGenerator:
     
     def generate(self, data = None,iterations = 1, prob = None):
         if prob == None:
-            prob =  [0.07462686567164178,
+            prob =  [0.00000000000000000,
                      0.14925373134328357,
                      0.14925373134328357,
                      0.14925373134328357,
                      0.14925373134328357,
                      0.14925373134328357,
-                     0.1791044776119403]
+                     0.25373134328358204]
         if data == None:
             data = self.data
         for idx, text in enumerate(data):
@@ -259,9 +254,22 @@ class DataGenerator:
             
         rng = np.random.default_rng()
         for iteration in tqdm(range(iterations)):
-            for idx, text in enumerate(data):
-                type_error = rng.choice(7, 1, p = prob)
-                gen_data, gen_label = self.get_error(text, type_error)
+            for text in data:
+                out_text = text.split()
+                label = [0]*len(out_text)
+                wrong_percent = len(out_text)*40//100
+                random_word_idx = np.random.choice(np.arange(0, len(out_text)), size=wrong_percent, replace=False)
+                for i, word in enumerate(out_text):
+                    if i not in random_word_idx:
+                        out_text[i], label[i] = [word,0]
+                    else:
+                        type_error = rng.choice(7, 1, p = prob)
+                        out_text[i], label[i] = self.get_error(word, type_error)
+                        type_err = self.label2id.get(label[i])
+                        self.error_counts[type_err] = self.error_counts[type_err] + 1
+                
+                gen_data = " ".join(out_text)
+                gen_label = (out_text, label)
                 self.generated_data.append((gen_data,text))
                 self.generated_label.append(gen_label)
         return "Generated data!"
@@ -274,14 +282,20 @@ class DataGenerator:
             input_data.append(data[0])
             target_data.append(data[1])
             
-        for token, errors, type_err in self.generated_label:
+        for token, errors in self.generated_label:
             tokens.append(token)
             error_col.append(errors)
-            type_err_col.append(type_err)
         
         return dict(input_text = input_data,
                     target_text = target_data,
                     tokens = tokens,
                     tags = error_col,
-                    general_error_type = type_err_col
                     )
+        
+    def get_data_info(self):
+        num_spacing = len('Missing Diacritical Marks') + 2
+        print(f"Length of generated dataset: {len(self.generated_data)} \n \n")
+        print("Number of errors in each type: ")
+        for key, item in self.error_counts.items():
+            print(f"{key:<{num_spacing}}:   {item}")
+        
